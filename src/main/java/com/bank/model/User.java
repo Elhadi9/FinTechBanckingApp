@@ -8,6 +8,9 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
+
+    private String role; // 👈 add this
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login - Banking App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --admin-primary: #2c3e50;
+            --admin-secondary: #34495e;
+            --admin-accent: #e74c3c;
+        }
+        body {
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+        }
+        .auth-container {
+            max-width: 400px;
+            margin: 50px auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 5px solid var(--admin-primary);
+        }
+        .auth-header {
+            background: var(--admin-primary);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .auth-form {
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            background: var(--admin-secondary);
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: var(--admin-primary);
+        }
+        .auth-footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+        }
+        .alert {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-header">
+        <h1><i class="fas fa-lock"></i> Admin Login</h1>
+        <p>Administrator access only</p>
+    </div>
+
+    <div class="auth-form">
+        <div th:if="${param.error}" class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> Invalid admin credentials
+        </div>
+
+        <div th:if="${param.logout}" class="alert alert-success">
+            <i class="fas fa-check-circle"></i> Successfully logged out
+        </div>
+
+        <!-- ✅ only one form -->
+        <form th:action="@{/admin/login}" method="post">
+            <div class="form-group">
+                <label for="username">Admin Username</label>
+                <input type="text" id="username" name="username" placeholder="Admin Username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+
+            <button type="submit" class="btn">Login as Admin</button>
+        </form>
+    </div>
+
+    <div class="auth-footer">
+        <p>Regular user? <a th:href="@{/login}">User login here</a></p>
+        <p>Need admin access? <a th:href="@{/admin/register}">Register admin account</a></p>
+    </div>
+</div>
+</body>
+</html>

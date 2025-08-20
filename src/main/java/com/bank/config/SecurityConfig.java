@@ -39,33 +39,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/register", "/css/**", "/js/**", "/h2-console/**").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasRole("USER")
+                        .anyRequest().permitAll()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/dashboard", true)
+                .formLogin(login -> login
+                        .loginPage("/login") // your login.html
+                        .defaultSuccessUrl("/home", true)
+                        .failureUrl("/login?error=true")
                         .permitAll()
                 )
-                // 👇 Enable Remember-Me
-                .rememberMe(remember -> remember
-                        .key("mySecretKey12345")   // random key used to generate tokens
-                        .tokenValiditySeconds(7 * 24 * 60 * 60) // 7 days
-                        .rememberMeParameter("remember-me")
-                )
-                        .logout(logout -> logout
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .logoutSuccessUrl("/login?logout")
+                .logout(logout -> logout
+                        .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
-                )
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/h2-console/**")
-                )
-                .headers(headers -> headers
-                        .frameOptions().disable()
                 );
-
         return http.build();
     }
 }

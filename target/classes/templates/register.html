@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Banking App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a73e8, #4cafef);
+            animation: fadeIn 1s ease-in;
+        }
+
+        .auth-container {
+            display: flex;
+            width: 950px;
+            min-height: 600px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            background: white;
+        }
+
+        .auth-left {
+            flex: 1;
+            padding: 40px;
+            background: linear-gradient(160deg, #1a73e8, #0f5dbb);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: slideInLeft 0.8s ease;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .auth-left h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .auth-left p {
+            font-size: 16px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .features {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .features li {
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .features i {
+            margin-right: 10px;
+            color: #ffd54f;
+        }
+
+        .auth-right {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: slideInRight 0.8s ease;
+        }
+
+        .auth-form {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .auth-form h2 {
+            font-size: 24px;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .form-group input:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 6px rgba(26, 115, 232, 0.3);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            background: #1a73e8;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #155db5;
+            transform: translateY(-2px);
+        }
+
+        .alert {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .login-link {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #1a73e8;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-80px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(80px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+<div class="auth-container">
+    <!-- Left branding -->
+    <div class="auth-left">
+        <div class="logo"><i class="fas fa-university"></i> Banking App</div>
+        <h2>Welcome to Your Bank</h2>
+        <p>Secure. Simple. Smart.</p>
+        <ul class="features">
+            <li><i class="fas fa-shield-alt"></i> Safe and secure banking</li>
+            <li><i class="fas fa-mobile-alt"></i> Easy mobile access</li>
+            <li><i class="fas fa-user-friends"></i> Friendly support</li>
+        </ul>
+    </div>
+
+    <!-- Right form -->
+    <div class="auth-right">
+        <form th:action="@{/register}" method="post" th:object="${user}" class="auth-form">
+            <h2>Create Account</h2>
+
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" th:field="*{username}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email"><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="email" th:field="*{email}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" th:field="*{password}" required>
+            </div>
+
+            <button type="submit" class="btn">Register</button>
+
+            <div th:if="${successMessage}" class="alert alert-success">
+                <i class="fas fa-check-circle"></i> <span th:text="${successMessage}"></span>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}"></span>
+            </div>
+
+            <p class="login-link">
+                Already have an account? <a th:href="@{/login}">Login here</a>
+            </p>
+        </form>
+    </div>
+</div>
+</body>
+</html>

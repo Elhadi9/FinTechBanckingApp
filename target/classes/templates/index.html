@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Banking App</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Welcome to Our Bank</h1>
+        <p>Secure, reliable banking services</p>
+    </header>
+
+    <nav>
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/login}">Login</a>
+        <a th:href="@{/register}">Register</a>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h2>Your Financial Future Starts Here</h2>
+            <p>Manage your accounts, transfer funds, and track your finances with our secure banking platform.</p>
+            <div class="cta-buttons">
+                <a th:href="@{/register}" class="btn btn-primary">Get Started</a>
+                <a th:href="@{/login}" class="btn btn-secondary">Login</a>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature">
+                <h3>Secure Transactions</h3>
+                <p>All your transactions are protected with bank-level security.</p>
+            </div>
+            <div class="feature">
+                <h3>24/7 Access</h3>
+                <p>Access your accounts anytime, anywhere.</p>
+            </div>
+            <div class="feature">
+                <h3>Easy Management</h3>
+                <p>Manage all your accounts in one place.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Banking App. All rights reserved.</p>
+    </footer>
+</div>
+</body>
+</html>
