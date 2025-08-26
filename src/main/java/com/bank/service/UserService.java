@@ -3,6 +3,7 @@ package com.bank.service;
 import com.bank.model.User;
 import com.bank.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -119,6 +120,15 @@ public class UserService implements UserDetailsService {
         }
         user.setPassword(passwordEncoder.encode("Welcome123!")); // Default password
         return userRepository.save(user);
+    }
+
+    public User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String login = authentication.getName(); // could be username or email
+
+        return userRepository.findByUsername(login)
+                .or(() -> userRepository.findByEmail(login)) // try email if not username
+                .orElseThrow(() -> new RuntimeException("User not found: " + login));
     }
 
 }

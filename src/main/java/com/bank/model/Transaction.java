@@ -16,8 +16,12 @@ public class Transaction {
     private TransactionStatus status = TransactionStatus.PENDING;
 
     @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    private Account account;
+    @JoinColumn(name = "sender_account_id", nullable = false)
+    private Account senderAccount;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_account_id", nullable = false)
+    private Account receiverAccount;
 
     @Column(nullable = false)
     private BigDecimal amount;
@@ -34,8 +38,8 @@ public class Transaction {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public Account getAccount() { return account; }
-    public void setAccount(Account account) { this.account = account; }
+//    public Account getAccount() { return account; }
+//    public void setAccount(Account account) { this.account = account; }
 
     public BigDecimal getAmount() { return amount; }
     public void setAmount(BigDecimal amount) { this.amount = amount; }
@@ -48,4 +52,10 @@ public class Transaction {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public Account getSenderAccount() { return senderAccount; }
+    public void setSenderAccount(Account senderAccount) { this.senderAccount = senderAccount; }
+
+    public Account getReceiverAccount() { return receiverAccount; }
+    public void setReceiverAccount(Account receiverAccount) { this.receiverAccount = receiverAccount; }
 }

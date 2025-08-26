@@ -19,6 +19,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     // Add these methods for admin dashboard
     List<Account> findByStatus(Account.AccountStatus status);
 
+
     @Query("SELECT a FROM Account a WHERE " +
             "(:accountNumber IS NULL OR a.accountNumber LIKE CONCAT('%', :accountNumber, '%')) AND " +
             "(:status IS NULL OR a.status = :status)")

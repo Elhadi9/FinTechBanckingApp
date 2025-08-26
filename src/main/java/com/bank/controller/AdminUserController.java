@@ -199,9 +199,14 @@ public class AdminUserController {
             List<Transaction> transactions = transactionService.findAll();
             String csv = "ID,Account ID,Amount,Timestamp,Status,Description\n" +
                     transactions.stream()
-                            .map(t -> String.format("%d,%d,%s,%s,%s,%s",
-                                    t.getId(), t.getAccount().getId(), t.getAmount(), t.getTimestamp(),
-                                    t.getStatus(), t.getDescription()))
+                            .map(t -> String.format("%d,%d,%d,%s,%s,%s,%s",
+                                    t.getId(),
+                                    t.getSenderAccount() != null ? t.getSenderAccount().getId() : null,
+                                    t.getReceiverAccount() != null ? t.getReceiverAccount().getId() : null,
+                                    t.getAmount(),
+                                    t.getTimestamp(),
+                                    t.getStatus(),
+                                    t.getDescription()))
                             .collect(Collectors.joining("\n"));
             byte[] csvBytes = csv.getBytes();
             HttpHeaders headers = new HttpHeaders();
