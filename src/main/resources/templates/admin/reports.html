@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Reports</title>
+</head>
+<body>
+<h2 th:text="${reportType}"></h2>
+<div th:if="${reportType == 'User Report'}">
+    <p>Active Users: <span th:text="${activeUsers}"></span></p>
+    <p>Suspended Users: <span th:text="${suspendedUsers}"></span></p>
+</div>
+<div th:if="${reportType == 'Transaction Report'}">
+    <p>Completed Transactions: <span th:text="${completedTransactions}"></span></p>
+    <p>Suspicious Transactions: <span th:text="${suspiciousTransactions}"></span></p>
+</div>
+<a th:href="@{/admin/reports(type='users')}">Generate User Report</a><br>
+<a th:href="@{/admin/reports(type='transactions')}">Generate Transaction Report</a><br>
+<a th:href="@{/admin/dashboard}">Back to Dashboard</a>
+</body>
+</html>

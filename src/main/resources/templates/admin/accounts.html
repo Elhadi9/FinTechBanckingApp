@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Management - Banking App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Reuse the same CSS from users.html */
+        :root {
+            --primary: #1a3a8f;
+            --primary-light: #2a56b6;
+            --secondary: #1a73e8;
+            --accent: #4e8cff;
+            --light: #f5f7fa;
+            --dark: #333;
+            --gray: #666;
+            --white: #ffffff;
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar (same as dashboard) */
+        .admin-sidebar {
+            width: 250px;
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px 0;
+        }
+
+        .admin-sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .admin-sidebar-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-sidebar-header .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .admin-sidebar-header .logo-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .admin-menu {
+            list-style: none;
+        }
+
+        .admin-menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .admin-menu-item:hover, .admin-menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .admin-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Filter Section */
+        .admin-card {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .admin-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .admin-card-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #0d62cf;
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background: #e4e9f2;
+        }
+
+        /* Table */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .admin-table th {
+            text-align: left;
+            padding: 12px;
+            background: var(--light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .admin-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .status-suspended {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--error);
+        }
+
+        .status-closed {
+            background: rgba(108, 117, 125, 0.1);
+            color: #6c757d;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-view {
+            background: rgba(26, 115, 232, 0.1);
+            color: var(--secondary);
+        }
+
+        .btn-suspend {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+
+        .btn-activate {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .admin-sidebar {
+                width: 100%;
+                padding: 10px;
+            }
+
+            .admin-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .admin-menu-item span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .admin-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="admin-sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="logo-text">Banking App</div>
+            </div>
+        </div>
+
+        <ul class="admin-menu">
+            <li><a href="/admin/dashboard" class="admin-menu-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a></li>
+            <li><a href="/admin/users" class="admin-menu-item">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a></li>
+            <li><a href="/admin/accounts" class="admin-menu-item active">
+                <i class="fas fa-wallet"></i>
+                <span>Accounts</span>
+            </a></li>
+            <li><a href="#" class="admin-menu-item">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Transactions</span>
+            </a></li>
+            <li><a href="#" class="admin-menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </a></li>
+            <li><a href="/logout" class="admin-menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <div class="admin-header">
+            <h1 class="admin-title">Account Management</h1>
+            <div class="admin-user-info">
+                <div class="admin-avatar">A</div>
+                <div>
+                    <div>Admin User</div>
+                    <small>System Administrator</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Card -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2 class="admin-card-title">Filter Accounts</h2>
+            </div>
+
+            <form th:action="@{/admin/accounts}" method="get" class="filter-form">
+                <div class="form-group">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" name="accountNumber" th:value="${param.accountNumber}" placeholder="Search by account number">
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option th:each="status : ${T(com.bank.model.Account$AccountStatus).values()}"
+                                th:value="${status}"
+                                th:text="${status}"
+                                th:selected="${param.status == status}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                    <a href="/admin/accounts" class="btn btn-secondary" style="margin-left: 10px;">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Accounts Table -->
+        <div class="admin-card">
+            <div class="admin-card-header">
+                <h2 class="admin-card-title">Accounts</h2>
+                <div class="admin-card-actions">
+                    <span th:text="${'Total: ' + accounts.size()}">Total: 2,547</span>
+                </div>
+            </div>
+
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>Account Number</th>
+                    <th>Owner</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="account : ${accounts}">
+                    <td th:text="${account.accountNumber}">ACC-10001</td>
+                    <td>
+                        <a th:href="@{/admin/users/{id}(id=${account.user.id})}"
+                           th:text="${account.user.username}">John Doe</a>
+                    </td>
+                    <td th:text="${'$' + #numbers.formatDecimal(account.balance, 1, 2)}">$12,450.75</td>
+                    <td>
+                                <span th:class="${account.status == T(com.bank.model.Account$AccountStatus).ACTIVE ? 'status status-active'
+                                                : (account.status == T(com.bank.model.Account$AccountStatus).SUSPENDED ? 'status status-suspended'
+                                                : 'status status-closed')}"
+                                      th:text="${account.status}">Active</span>
+                    </td>
+                    <td th:text="${#temporals.format(account.createdAt, 'yyyy-MM-dd')}">2023-10-15</td>
+                    <td>
+                        <a th:href="@{/admin/users/{id}(id=${account.user.id})}" class="btn btn-sm btn-view">
+                            <i class="fas fa-user"></i> User
+                        </a>
+                        <a th:if="${account.status == T(com.bank.model.Account$AccountStatus).ACTIVE}"
+                           th:href="@{/admin/accounts/{id}/status?status=SUSPENDED(id=${account.id})}"
+                           class="btn btn-sm btn-suspend">
+                            <i class="fas fa-ban"></i> Suspend
+                        </a>
+                        <a th:if="${account.status == T(com.bank.model.Account$AccountStatus).SUSPENDED}"
+                           th:href="@{/admin/accounts/{id}/status?status=ACTIVE(id=${account.id})}"
+                           class="btn btn-sm btn-activate">
+                            <i class="fas fa-check"></i> Activate
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

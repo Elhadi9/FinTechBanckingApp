@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Management - Banking App</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Your existing CSS styles from dashboard */
+        :root {
+            --primary: #1a3a8f;
+            --primary-light: #2a56b6;
+            --secondary: #1a73e8;
+            --accent: #4e8cff;
+            --light: #f5f7fa;
+            --dark: #333;
+            --gray: #666;
+            --white: #ffffff;
+            --success: #28a745;
+            --error: #dc3545;
+            --warning: #ffc107;
+            --pending: #17a2b8;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 250px;
+            background: var(--primary);
+            color: var(--white);
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-right: 20px;
+        }
+
+        .admin-sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .admin-sidebar-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-sidebar-header .logo-icon {
+            font-size: 1.8rem;
+        }
+
+        .admin-sidebar-header .logo-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .admin-menu {
+            list-style: none;
+        }
+
+        .admin-menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--white);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .admin-menu-item:hover, .admin-menu-item.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            background: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-title {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .admin-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Filter Section */
+        .filter-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-form label {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .filter-form select, .filter-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: var(--white);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        /* Table Styles */
+        .admin-table-container {
+            overflow-x: auto;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .admin-table th {
+            text-align: left;
+            padding: 15px;
+            background: var(--light);
+            color: var(--primary);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .admin-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-approved {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(23, 162, 184, 0.1);
+            color: var(--pending);
+        }
+
+        .status-flagged {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+        }
+
+        .status-rolledback {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--error);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .btn-flag {
+            background: rgba(255, 193, 7, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .btn-flag:hover {
+            background: rgba(255, 193, 7, 0.2);
+        }
+
+        .btn-rollback {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-rollback:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-approve {
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-approve:hover {
+            background: rgba(40, 167, 69, 0.2);
+        }
+
+        .reason-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .admin-sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+
+            .admin-menu {
+                display: flex;
+                overflow-x: auto;
+            }
+
+            .admin-menu-item span {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-buttons {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <!-- Sidebar -->
+    <div class="admin-sidebar">
+        <div class="admin-sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-landmark"></i>
+                </div>
+                <div class="logo-text">Banking App</div>
+            </div>
+        </div>
+
+        <ul class="admin-menu">
+            <li><a href="/admin/dashboard" class="admin-menu-item">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </a></li>
+            <li><a href="/admin/users" class="admin-menu-item">
+                <i class="fas fa-users"></i>
+                <span>Users</span>
+            </a></li>
+            <li><a href="/admin/accounts" class="admin-menu-item">
+                <i class="fas fa-wallet"></i>
+                <span>Accounts</span>
+            </a></li>
+            <li><a href="/admin/transactions" class="admin-menu-item active">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Transactions</span>
+            </a></li>
+            <li><a href="/logout" class="admin-menu-item">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-main">
+        <div class="admin-header">
+            <h1 class="admin-title">Transaction Management</h1>
+            <div class="admin-user-info">
+                <div class="admin-avatar">A</div>
+                <div>
+                    <div>Admin User</div>
+                    <small>System Administrator</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-card">
+            <form th:action="@{/admin/transactions}" method="get" class="filter-form">
+                <label>Filter by Status:</label>
+                <select name="status">
+                    <option value="">All Transactions</option>
+                    <option th:each="status : ${statuses}" th:value="${status}" th:text="${status}"
+                            th:selected="${param.status == status}"></option>
+                </select>
+
+                <label>Account ID:</label>
+                <input type="number" name="accountId" placeholder="Account ID" th:value="${param.accountId}">
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+
+                <a th:href="@{/admin/transactions}" class="btn">
+                    <i class="fas fa-sync"></i> Clear Filters
+                </a>
+            </form>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="admin-table-container">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Account</th>
+                    <th>Amount</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                    <th>Description</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="transaction : ${transactions}">
+                    <td th:text="${transaction.id}"></td>
+                    <td>
+                        <a th:href="@{/admin/accounts/{id}(id=${transaction.account.id})}"
+                           th:text="${transaction.account.accountNumber}" class="btn btn-sm btn-view">
+                        </a>
+                    </td>
+                    <td th:text="${'$' + #numbers.formatDecimal(transaction.amount, 1, 2)}"></td>
+                    <td th:text="${#temporals.format(transaction.timestamp, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td>
+                        <!-- FIXED: Using switch statement for status -->
+                        <span th:switch="${transaction.status}">
+                            <span th:case="'APPROVED'" class="status status-approved" th:text="${transaction.status}"></span>
+                            <span th:case="'PENDING'" class="status status-pending" th:text="${transaction.status}"></span>
+                            <span th:case="'FLAGGED'" class="status status-flagged" th:text="${transaction.status}"></span>
+                            <span th:case="*" class="status status-rolledback" th:text="${transaction.status}"></span>
+                        </span>
+                    </td>
+                    <td th:text="${transaction.description}"></td>
+                    <td>
+                        <div class="action-buttons">
+                            <form th:action="@{/admin/transactions/{id}/flag(id=${transaction.id})}" method="post">
+                                <input type="text" name="reason" placeholder="Reason" class="reason-input" required>
+                                <button type="submit" class="btn btn-sm btn-flag">
+                                    <i class="fas fa-flag"></i> Flag
+                                </button>
+                            </form>
+                            <form th:action="@{/admin/transactions/{id}/rollback(id=${transaction.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-rollback">
+                                    <i class="fas fa-undo"></i> Rollback
+                                </button>
+                            </form>
+                            <form th:action="@{/admin/transactions/{id}/approve(id=${transaction.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-approve">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

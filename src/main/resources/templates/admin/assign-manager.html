@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Assign Manager</title>
+</head>
+<body>
+<h2>Assign Manager to Account <span th:text="${account.id}"></span></h2>
+<form th:action="@{/admin/accounts/{accountId}/assign-manager(accountId=${account.id})}" method="post">
+    <label>Select Manager:</label>
+    <select name="managerId" required>
+        <option th:each="manager : ${managers}"
+                th:value="${manager.id}"
+                th:text="${manager.username} + ' (' + ${manager.email} + ')'"></option>
+    </select>
+    <button type="submit">Assign</button>
+</form>
+<a th:href="@{/admin/accounts}">Back to Accounts</a>
+</body>
+</html>

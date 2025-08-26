@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>System Configurations</title>
+</head>
+<body>
+<h2>System Configurations</h2>
+<a th:href="@{/admin/configs/new}">Add New Config</a>
+<table>
+    <thead>
+    <tr>
+        <th>Key</th>
+        <th>Value</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="config : ${configs}">
+        <td th:text="${config.key}"></td>
+        <td th:text="${config.value}"></td>
+        <td th:text="${config.description}"></td>
+    </tr>
+    </tbody>
+</table>
+<a th:href="@{/admin/dashboard}">Back to Dashboard</a>
+</body>
+</html>

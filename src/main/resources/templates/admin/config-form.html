@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add/Edit Configuration</title>
+</head>
+<body>
+<h2>Add/Edit Configuration</h2>
+<form th:action="@{/admin/configs}" th:object="${config}" method="post">
+    <label>Key:</label>
+    <input type="text" th:field="*{key}" required><br>
+    <label>Value:</label>
+    <input type="text" th:field="*{value}" required><br>
+    <label>Description:</label>
+    <input type="text" th:field="*{description}"><br>
+    <button type="submit">Save</button>
+</form>
+<a th:href="@{/admin/configs}">Back to Configurations</a>
+</body>
+</html>
