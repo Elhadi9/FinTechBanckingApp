@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_container
+    environment:
+      MYSQL_ROOT_PASSWORD: MySecurePass123!@#
+      MYSQL_DATABASE: bankdb
+    ports:
+      - "3306:3306"
+    networks:
+      - bank-network
+
+  app:
+    build: .
+    container_name: springboot_app
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/bankdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: MySecurePass123!@#
+    networks:
+      - bank-network
+
+networks:
+  bank-network:
+    driver: bridge
